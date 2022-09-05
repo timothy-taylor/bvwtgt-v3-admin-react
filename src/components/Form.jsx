@@ -1,19 +1,21 @@
-import { Button } from "./Button";
-
-const errorStyle = "";
-export const Error = () => (
-  <div className={errorStyle}>There is an error</div>
+export const Label = ({ text, children }) => (
+  <label className="flex flex-col">
+    {text}
+    {children}
+  </label>
 );
 
-const loadingStyle = "";
-export const Loading = ({ label }) => (
-  <div className={loadingStyle}>{`Loading ${label}...`}</div>
+const buttonStyle =
+  "w-1/3 p-4 mt-2 border rounded border-black hover:bg-black hover:text-white";
+export const Button = ({ text }) => (
+  <button className={buttonStyle} type="submit">
+    {text}
+  </button>
 );
 
-const formStyle = "container pt-4 max-w-prose mx-auto flex flex-col";
 export const Form = ({ label, handleSubmit, children }) => {
   return (
-    <form className={formStyle} onSubmit={handleSubmit}>
+    <form className="flex flex-col" onSubmit={handleSubmit}>
       {children}
       <Button text={label} />
     </form>

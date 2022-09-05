@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supabase } from "../api/supabase-client.js";
-import { Form } from "./Form.jsx";
+import { Form } from "../components/Form.jsx";
+import { Layout } from "../components/Layout";
 
 export const LogIn = () => {
   const [email, setEmail] = useState("");
@@ -18,13 +19,16 @@ export const LogIn = () => {
   };
 
   return (
-    <Form label="Log in" handleSubmit={handleSubmit}>
-      <input
-        type="email"
-        placeholder="email@example.com"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-    </Form>
+    <Layout nav={false}>
+      <Form label="Log in" handleSubmit={handleSubmit}>
+        <input
+          type="email"
+          placeholder="email@example.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+      </Form>
+    </Layout>
+
   );
 };

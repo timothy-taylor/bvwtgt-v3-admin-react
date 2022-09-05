@@ -1,17 +1,19 @@
-import { useUserAuth } from "./hooks/useUserAuth.js";
-import { LogIn } from "./components/LogIn.jsx";
-import { CreatePost } from "./components/CreatePost.jsx";
-import { Loading, Error } from "./components/Form.jsx";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Home } from "./pages/Home";
+import { GetPosts } from "./pages/GetPosts";
+import { EditPost } from "./pages/EditPost";
+import { CreatePost } from "./pages/CreatePost";
 
 function App() {
-  const { user, loading, error } = useUserAuth();
-
   return (
-    <main className="min-w-screen min-h-screen px-6 py-3 dark:bg-amber-200">
-      {error && <Error error={error} />}
-      {loading && <Loading label="user" />}
-      {!loading && user?.role !== "authenticated" ? <LogIn /> : <CreatePost />}
-    </main>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/posts/:id" element={<EditPost />} />
+        <Route path="/posts" element={<GetPosts />} />
+        <Route path="/newPost" element={<CreatePost />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
