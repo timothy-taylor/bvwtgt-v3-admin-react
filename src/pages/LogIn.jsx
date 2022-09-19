@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { supabase } from "../api/supabase-client.js";
 import { Form } from "../components/Form.jsx";
 import { Layout } from "../components/Layout";
+import { queries } from "../lib/queries.js";
+
 
 export const LogIn = () => {
   const [email, setEmail] = useState("");
@@ -9,13 +10,7 @@ export const LogIn = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      const { user, session } = await supabase.auth.signInWithOtp({ email });
-      console.log("user: ", user);
-      console.log("session: ", session);
-    } catch (err) {
-      console.error(err);
-    }
+    await queries.signIn(email);
   };
 
   return (

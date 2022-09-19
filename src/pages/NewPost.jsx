@@ -1,26 +1,27 @@
 import { useState } from "react";
 import { useGetSupabase } from "../hooks/useGetSupabase";
-import api from "../api/";
+import { queries } from "../lib/queries";
 import { Form } from "../components/Form";
 import { Layout } from "../components/Layout";
 import { Error, Loading } from "../components/LoadingError.jsx";
+import { buildPostEntity, defaultPost } from "../lib/data-structures.js";
 
-const defaultState = { title: "", content: "", tag_id: "" };
-export const CreatePost = () => {
-  const { data: tags, loading, error } = useGetSupabase(api.readTags);
-  const [post, setPost] = useState(defaultState);
+export const NewPost = () => {
+  const [post, setPost] = useState(defaultPost);
+  const { data: tags, loading, error } = useGetSupabase(() => queries.read("tags"));
 
   const updatePost = (cur) => setPost((prev) => ({ ...prev, ...cur }));
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const response = api.createPost(post);
-    if (typeof response !== "undefined") setPost(defaultState);
+    const postEntity = buildPostEntity(post);
+    const response = queries.create("posts", postEntity);
+    if (typeof response !== "undefined") setPost(defaultPost);
   };
 
   if (loading) return <Loading label="tags" />;
-  if (error) return <Error error={error} />;
+  if (error) return <Error />;
   return (
     <Layout nav={true}>
       <Form label="Create post" handleSubmit={handleSubmit}>

@@ -1,49 +1,51 @@
 import { Layout } from "../components/Layout";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useGetSupabase } from "../hooks/useGetSupabase";
-import { Form, Label } from "../components/Form";
-import api from "../api/";
+import { DeleteButton, Form, Label } from "../components/Form";
 import { Error, Loading } from "../components/LoadingError.jsx";
+import { queries } from "../lib/queries.js";
+import { buildPostEntity, defaultPost } from "../lib/data-structures.js";
 
-const defaultState = { title: "", content: "", tag_id: "" };
-export const EditPost = () => {
+export const Post = () => {
   const { id } = useParams();
-  const [post, setPost] = useState(defaultState);
-  const {
-    data,
-    loading: loadingPost,
-    error: errorPost,
-  } = useGetSupabase(() => api.readPost(id));
-  const {
-    data: tags,
-    loading: loadingTags,
-    error: errorTags,
-  } = useGetSupabase(api.readTags);
+  const navigate = useNavigate();
+  const [post, setPost] = useState(defaultPost);
+  const fetchedPost = useGetSupabase(() => queries.read("posts", id));
+  const fetchedTags = useGetSupabase(() => queries.read("tags"));
 
   const updatePost = (cur) => setPost((prev) => ({ ...prev, ...cur }));
+
+  const handleDelete = async () => {
+    if (confirm("Are you sure you want to delete this post?")) {
+      await queries.delete("posts", id);
+      navigate("/posts");
+    }
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const response = api.updatePost(id, post);
-    if (typeof response !== "undefined") console.log("post updated");
+    const postEntity = buildPostEntity(post);
+    const response = queries.update("posts", id, postEntity);
+    if (typeof response !== "undefined") alert("post updated");
   };
 
   useEffect(() => {
     let ignore = false;
 
     if (!ignore) {
-      const { id, title, content, tag_id, created_at } = data;
+      const { id, title, content, tag_id, created_at } = fetchedPost.data;
       updatePost({ id, title, content, tag_id, created_at });
     }
 
     return () => {
       ignore = true;
     };
-  }, [data]);
+  }, [fetchedPost.data, id]);
 
-  if (loadingPost || loadingTags) return <Loading label="post" />;
-  if (errorTags || errorPost) return <Error error={{...errorPost, ...errorTags}} />;
+  if (fetchedPost.loading || fetchedTags.loading) return <Loading label="post" />;
+  if (fetchedTags.error || fetchedPost.error) return <Error />;
   return (
     <Layout nav={true}>
       <Form label="Update post" handleSubmit={handleSubmit}>
@@ -67,7 +69,7 @@ export const EditPost = () => {
             onChange={(e) => updatePost({ tag_id: e.target.value })}
           >
             <option value="">--choose a tag--</option>
-            {tags.map((e) => (
+            {fetchedTags.data.map((e) => (
               <option key={e.name} value={e.id}>
                 {e.name}
               </option>
@@ -75,6 +77,7 @@ export const EditPost = () => {
           </select>
         </Label>
       </Form>
+      <DeleteButton handeClick={handleDelete} />
     </Layout>
   );
 };

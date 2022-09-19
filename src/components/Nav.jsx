@@ -16,6 +16,8 @@ export const Nav = () => {
     <nav className="max-w-prose mx-auto text-right">
       <StyledNavLink path="/newPost" text="New post" />
       <StyledNavLink path="/posts" text="Edit post" />
+      <StyledNavLink path="/newPlans" text="New plan" />
+      <StyledNavLink path="/plans" text="Edit plan" />
     </nav>
   );
 };

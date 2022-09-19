@@ -1,17 +1,23 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Home } from "./pages/Home";
-import { GetPosts } from "./pages/GetPosts";
-import { EditPost } from "./pages/EditPost";
-import { CreatePost } from "./pages/CreatePost";
+import { Posts } from "./pages/Posts.jsx";
+import { Post } from "./pages/Post.jsx";
+import { NewPost } from "./pages/NewPost.jsx";
+import { NewPlan } from "./pages/NewPlan.jsx";
+import { Plans } from "./pages/Plans.jsx";
+import { Plan } from "./pages/Plan.jsx";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/posts/:id" element={<EditPost />} />
-        <Route path="/posts" element={<GetPosts />} />
-        <Route path="/newPost" element={<CreatePost />} />
+        <Route path="/posts/:id" element={<Post />} />
+        <Route path="/posts" element={<Posts />} />
+        <Route path="/newPost" element={<NewPost />} />
+        <Route path="/plans/:id" element={<Plan />} />
+        <Route path="/plans" element={<Plans />} />
+        <Route path="/newPlans" element={<NewPlan />} />
       </Routes>
     </BrowserRouter>
   );
