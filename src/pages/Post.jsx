@@ -10,9 +10,8 @@ import { buildPostEntity, defaultPost } from "../lib/data-structures.js";
 export const Post = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [post, setPost] = useState(defaultPost);
-  const fetchedPost = useGetSupabase(() => queries.read("posts", id));
   const fetchedTags = useGetSupabase(() => queries.read("tags"));
+  const [post, setPost] = useState(defaultPost);
 
   const updatePost = (cur) => setPost((prev) => ({ ...prev, ...cur }));
 
@@ -23,29 +22,30 @@ export const Post = () => {
     }
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const postEntity = buildPostEntity(post);
-    const response = queries.update("posts", id, postEntity);
+    const response = await queries.update("posts", id, postEntity);
     if (typeof response !== "undefined") alert("post updated");
   };
 
   useEffect(() => {
-    let ignore = false;
-
-    if (!ignore) {
-      const { id, title, content, tag_id, created_at } = fetchedPost.data;
+    const fetchPost = async () => {
+      const fetchedPost = await queries.read("posts", id);
+      const { title, content, tag_id, created_at } = fetchedPost.data;
       updatePost({ id, title, content, tag_id, created_at });
     }
 
+    let ignore = false;
+    if (!ignore) fetchPost().catch(error => console.error(error));
     return () => {
       ignore = true;
     };
-  }, [fetchedPost.data, id]);
+  }, [id]);
 
-  if (fetchedPost.loading || fetchedTags.loading) return <Loading label="post" />;
-  if (fetchedTags.error || fetchedPost.error) return <Error />;
+  if (fetchedTags.loading) return <Loading label="post" />;
+  if (fetchedTags.error) return <Error />;
   return (
     <Layout nav={true}>
       <Form label="Update post" handleSubmit={handleSubmit}>
@@ -77,7 +77,7 @@ export const Post = () => {
           </select>
         </Label>
       </Form>
-      <DeleteButton handeClick={handleDelete} />
+      <DeleteButton handleClick={handleDelete} />
     </Layout>
   );
 };

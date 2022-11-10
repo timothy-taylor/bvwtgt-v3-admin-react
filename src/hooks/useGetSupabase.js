@@ -9,14 +9,17 @@ export const useGetSupabase = (query) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const getData = async () => {
-      const { data: response } = await query();
-      setData(response);
-    };
-
-    getData()
-      .catch((err) => setError(err))
-      .finally(() => setLoading(false));
+    (async () => {
+      try {
+        const { data: response } = await query();
+        setData(response);
+      } catch (e) {
+        console.error(e);
+        setError(e);
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
 
   return { data, loading, error };

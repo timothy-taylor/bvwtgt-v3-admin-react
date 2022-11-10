@@ -1,17 +1,14 @@
 import { Layout } from "../components/Layout";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useGetSupabase } from "../hooks/useGetSupabase.js";
 import { queries } from "../lib/queries.js";
 import { DeleteButton, Form, Label } from "../components/Form";
-import { Error, Loading } from "../components/LoadingError";
 import { defaultPlan } from "../lib/data-structures.js";
 
 export const Plan = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [plan, setPlan] = useState(defaultPlan);
-  const { data, loading, error } = useGetSupabase(() => queries.read("plans", id));
 
   const updatePlan = (cur) => setPlan((prev) => ({ ...prev, ...cur }));
 
@@ -30,20 +27,19 @@ export const Plan = () => {
   };
 
   useEffect(() => {
-    let ignore = false;
-
-    if (!ignore) {
-      const { location, title, description, arrive_date, leave_date } = data;
+    const fetchPlan = async () => {
+      const fetchedPlan = await queries.read("plans", id);
+      const { location, title, description, arrive_date, leave_date } = fetchedPlan.data;
       updatePlan({ location, title, description, arrive_date, leave_date });
     }
 
+    let ignore = false;
+    if (!ignore) fetchPlan().catch(err => console.error(err));
     return () => {
       ignore = true;
     };
-  }, [data, id]);
+  }, [id]);
 
-  if (loading) return <Loading label="plan" />;
-  if (error) return <Error />
   return (
     <Layout nav={true}>
       <Form label="Update plan" handleSubmit={handleSubmit}>
@@ -83,7 +79,7 @@ export const Plan = () => {
           />
         </Label>
       </Form>
-      <DeleteButton handeClick={handleDelete} />
+      <DeleteButton handleClick={handleDelete} />
     </Layout>
   )
 }

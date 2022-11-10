@@ -5,7 +5,7 @@ import { queries }from "../lib/queries.js"
 import { Error, Loading } from "../components/LoadingError.jsx";
 
 export const Home = () => {
-  const { data, loading, error } = useGetSupabase(queries.getUser);
+  const { data, loading, error } = useGetSupabase(() => queries.getUser());
 
   if (loading) return <Loading label="user" />
   if (error) return <Error />

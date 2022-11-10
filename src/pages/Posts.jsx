@@ -11,7 +11,7 @@ export const Posts = () => {
   if (error) return <Error />
   return (
     <Layout nav={true}>
-      {posts.map((post, i) => (
+      {(posts || []).map((post, i) => (
         <Link className="block hover:underline" key={`${i}${post.title}`} to={`/posts/${post.id}`}>
           {post.title}
         </Link>
